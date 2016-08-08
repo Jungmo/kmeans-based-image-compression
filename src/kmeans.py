@@ -1,51 +1,97 @@
+#-*- coding: utf-8 -*-
 import random
-import numpy
+
+import operator
+
 
 def kmeans(image, K, I):
-    for iter in range(0,1):
-        centroid = []
-        summ = []
-        d={}
-        for i in range(0, K):
-            centroid.append(random.randrange(255))
+    centroid = getRandomCentroid(image, K) # Initial centroid
+    subtract = []
+#### initialize finish
 
-        centroid.sort()
-        print centroid
-
+    for iter in range(0, I) :
+        table = {}
         for i in range(0, K):
-            d[centroid[i]] = []
+            table[centroid[i]] = []
 
         for i in image:
             for j in i:
-                temp = findMin(K, centroid,d, j)
-                temp.append(j)
+                for k in range(0,K):
+                    subtract.append(abs(j-centroid[k]))
+                #print centroid, j, temp, temp.index(min(temp))
+                table[centroid[subtract.index(min(subtract))]].append(j)
+                subtract = []
+
+#### one iteration finish
+
+        centroid = generateNewCentroid(table)
+
+        print iter , " - ", centroid
+
+    return changeImage(image, centroid, K)
 
 
-        for i in range(0,K):
-            if len(d[centroid[i]]) != 0 :
-                summ.append(sum(d[centroid[i]])/len(d[centroid[i]]))
-            else:
-                summ.append(centroid[i])
-                print "devide by 0"
-       # print summ
+def generateNewCentroid(table):
 
-    sub = []
-    for i in range(0,200):
-        for j in range(0,200):
-            for p in range(0, K):
-                sub.append(abs(j - centroid[p]))
+    temp_centroid = []
+    for i in table.keys():
+        values =  table[i]
 
+        if len(values) == 0:
+            temp_centroid.append(i)
+        else:
+            temp_centroid.append(int(sum(values, 0.0) / len(values)))
 
-            b = sub.index(min(sub))
-            sub = []
+    temp_centroid.sort()
+    return temp_centroid
 
 
+def getRandomCentroid(image, K):
 
-def findMin(K, centroid,d, j):
-    sub = []
+    centroid = []
+    pixel = []
+    for i in image :
+        for j in i :
+            try :
+                pixel.index(j)
+            except ValueError :
+                pixel.append(j)
+
     for i in range(0, K) :
-        sub.append(abs(j-centroid[i]))
+        while 1:
+            temp = random.randrange(len(pixel))
+            if isValueInList(centroid, temp) == 1 :
+                continue
+            else:
+                centroid.append(temp)
+                break
 
+    centroid.sort()
 
-    return d[centroid[sub.index(min(sub))]]
+    return centroid
+
+def isValueInList(list, value):
+    for i in range(0, len(list)):
+        if i == value:
+            return 1
+        else :
+            return 0
+
+def changeImage(image, lastCentroid, K):
+    x = 0
+    y = 0
+    for i in image:
+        for j in i:
+            nearlist = abs(j - lastCentroid[0])
+            nearlist_centroid = lastCentroid[0]
+            for k in range(1, K):
+                temp = abs(j - lastCentroid[k])
+                if nearlist > temp :
+                    nearlist = temp
+                    nearlist_centroid = lastCentroid[k]
+            image[x][y] = nearlist_centroid
+            y = y+1
+        x = x + 1
+        y = 0
+    return image
 
