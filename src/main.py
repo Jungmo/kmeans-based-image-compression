@@ -1,28 +1,35 @@
 #-*- coding: utf-8 -*-
 import argparse
 import kmeans
-
+import os
 import cv2
 
+dirpath = "/Users/jungmo/Documents/github/birdnest/repo/train/"
 parser = argparse.ArgumentParser()
 
 parser.add_argument('--iter', type = int, default='5', help='the number of itmes of iteration')
-parser.add_argument('--clus', type = int, default='12', help='the number of cluster')
+parser.add_argument('--clus', type = int, default='4', help='the number of cluster')
 
 args = parser.parse_args()
 
+filelist = os.listdir(dirpath)
 
-image = cv2.imread("../image/image.bmp", 0)
-original = cv2.imread("../image/image.bmp", 0)
-K = args.clus
-I = args.iter
+def fuc(filename):
+    print filename
+    if filename.count(".bmp") == 0 :
+        return
 
-change = kmeans.kmeans(image, K, I)
+    image = cv2.imread(dirpath+filename, 0)
 
-cv2.namedWindow("change", cv2.WINDOW_AUTOSIZE)
-cv2.namedWindow("original", cv2.WINDOW_AUTOSIZE)
+    K = args.clus
+    I = args.iter
 
-cv2.imshow("original", original)
-cv2.imshow("change", change)
+    change = kmeans.kmeans(image, K, I)
 
-cv2.waitKey(0)
+    filename = os.path.splitext(filename)[0]
+    cv2.imwrite(filename+"_modified.bmp", change)
+
+for filename in filelist:
+    fuc(filename)
+
+

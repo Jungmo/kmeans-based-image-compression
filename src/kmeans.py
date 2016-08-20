@@ -1,16 +1,16 @@
 #-*- coding: utf-8 -*-
 import random
 
-import operator
-
-
 def kmeans(image, K, I):
+
     centroid = getRandomCentroid(image, K) # Initial centroid
     subtract = []
+
 #### initialize finish
 
     for iter in range(0, I) :
         table = {}
+
         for i in range(0, K):
             table[centroid[i]] = []
 
@@ -18,7 +18,6 @@ def kmeans(image, K, I):
             for j in i:
                 for k in range(0,K):
                     subtract.append(abs(j-centroid[k]))
-                #print centroid, j, temp, temp.index(min(temp))
                 table[centroid[subtract.index(min(subtract))]].append(j)
                 subtract = []
 
@@ -30,12 +29,12 @@ def kmeans(image, K, I):
 
     return changeImage(image, centroid, K)
 
-
 def generateNewCentroid(table):
 
     temp_centroid = []
+
     for i in table.keys():
-        values =  table[i]
+        values = table[i]
 
         if len(values) == 0:
             temp_centroid.append(i)
@@ -43,8 +42,8 @@ def generateNewCentroid(table):
             temp_centroid.append(int(sum(values, 0.0) / len(values)))
 
     temp_centroid.sort()
-    return temp_centroid
 
+    return temp_centroid
 
 def getRandomCentroid(image, K):
 
@@ -57,25 +56,32 @@ def getRandomCentroid(image, K):
             except ValueError :
                 pixel.append(j)
 
-    for i in range(0, K) :
-        while 1:
-            temp = random.randrange(len(pixel))
-            if isValueInList(centroid, temp) == 1 :
-                continue
-            else:
-                centroid.append(temp)
-                break
+    #for i in range(0, K) :
+
+    while len(centroid) < K:
+        temp = random.randrange(len(pixel))
+        if isValueInList(centroid, temp) == 1 :
+            #print "dup : " , centroid, temp
+            continue
+        else:
+            centroid.append(temp)
 
     centroid.sort()
+
+    print centroid
 
     return centroid
 
 def isValueInList(list, value):
-    for i in range(0, len(list)):
+    print "list? :", list, value
+    for i in list:
+        print "i = ", i
         if i == value:
+            print "yes"
             return 1
         else :
-            return 0
+            print "no"
+    return 0
 
 def changeImage(image, lastCentroid, K):
     x = 0
