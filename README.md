@@ -14,3 +14,7 @@ Inspired by ['K -Means Clustering-Based Data Compression Scheme for Wireless Ima
 
 ##TODO
 전송할 데이터로 압축.
+
+
+**[Project Report](https://github.com/Jungmo/project_report/blob/master/kmeans_based_image_compression.md)**
+
