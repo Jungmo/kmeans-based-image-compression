@@ -1,5 +1,20 @@
 #-*- coding: utf-8 -*-
 import random
+import numpy as np
+import GlobalVariable as GV
+import csv
+
+type = GV.dirtype
+imagepath = GV.dirpath
+fp = open(type+".csv", 'wb')
+writer = csv.writer(fp, delimiter=',')
+
+pixlist = []
+for i in range(0,16):
+    pixlist.append(i)
+
+print  pixlist
+writer.writerow(['label']+pixlist)
 
 def kmeans(image, K, I):
 
@@ -35,13 +50,14 @@ def generateNewCentroid(table):
 
     for i in table.keys():
         values = table[i]
-
         if len(values) == 0:
             temp_centroid.append(i)
         else:
             temp_centroid.append(int(sum(values, 0.0) / len(values)))
 
     temp_centroid.sort()
+
+    temp_centroid = [15,47,79,111,143,175,207,239]
 
     return temp_centroid
 
@@ -61,7 +77,7 @@ def getRandomCentroid(image, K):
     while len(centroid) < K:
         temp = random.randrange(len(pixel))
         if isValueInList(centroid, temp) == 1 :
-            #print "dup : " , centroid, temp
+            print "dup : " , centroid, temp
             continue
         else:
             centroid.append(temp)
@@ -69,18 +85,14 @@ def getRandomCentroid(image, K):
     centroid.sort()
 
     print centroid
-
+    #centroid = [0, 31, 63, 95, 127, 159 ,191, 223, 255]
+    centroid = [15,47,79,111,143,175,207,239]
     return centroid
 
 def isValueInList(list, value):
-    print "list? :", list, value
     for i in list:
-        print "i = ", i
         if i == value:
-            print "yes"
             return 1
-        else :
-            print "no"
     return 0
 
 def changeImage(image, lastCentroid, K):
@@ -99,5 +111,19 @@ def changeImage(image, lastCentroid, K):
             y = y+1
         x = x + 1
         y = 0
-    return image
+
+    areaEachPixel = []
+    for i in lastCentroid:
+        print np.count_nonzero(image[50:150,50:150] == i)
+        areaEachPixel.append(np.count_nonzero(image[50:150,50:150] == i))
+    '''
+    if GV.dirtype.find("empty"):
+        label = 1
+    elif GV.dirtype.find("bird"):
+        label = 2
+    '''
+    label = GV.dirtype
+    writer.writerow([label]+ areaEachPixel)
+
+    return image[50:150,50:150]
 
